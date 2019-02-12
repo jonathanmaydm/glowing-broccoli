@@ -23,10 +23,10 @@ const App = props => {
         <NavPanel>
           <Route path="/" component={Nav} />
         </NavPanel>
-        <MainContent>
+        <MainPanel>
           <Route path="/tables/:table" component={Table} />
           <Route path="/tables/:table" component={ConfirmBar} />
-        </MainContent>
+        </MainPanel>
       </Window>
     </BrowserRouter>
   );
@@ -37,21 +37,26 @@ export default connect(
   { connectMassive }
 )(App);
 
-const MainContent = styled.section`
+const MainPanel = styled.section`
   overflow: auto;
+  flex-grow: 1;
+  background: rgb(255, 255, 255);
 `;
 
 const NavPanel = styled.nav`
-  max-width: 30vw;
+  background: rgba(200, 200, 200, 0.98);
+  width: 20vw;
   display: flex;
   flex-direction: column;
   border-right: 1px solid gray;
-  padding: 0 10px;
   overflow: auto;
+  flex-shrink: 0;
 `;
 
 const Window = styled.div`
   width: 100vw;
   height: 100vh;
   display: flex;
+  flex-direction: row;
+  // background: transparent;
 `;
