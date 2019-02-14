@@ -4,6 +4,7 @@ import { Prompt } from "react-router-dom";
 import { discardChanges, toggleEdit } from "../redux/reducers";
 
 import Cell from "./Cell";
+import { Row } from "./Row";
 
 const Table = (props: any) => {
   const [data, updateData] = useState([]);
@@ -14,7 +15,7 @@ const Table = (props: any) => {
       });
     }
   };
-  useEffect(fetchData, [props.match.params.table]);
+  useEffect(fetchData, [props.match.params.table, props.massive]);
 
   useEffect(
     () => {
@@ -30,7 +31,7 @@ const Table = (props: any) => {
 
   return (
     <div>
-      <table>
+      <table style={{ borderCollapse: "collapse", borderSpacing: 0 }}>
         <thead>
           <tr>
             {Object.keys(data[0]).map(column => (
@@ -49,20 +50,7 @@ const Table = (props: any) => {
         </thead>
         <tbody>
           {data.map((row, index) => {
-            return (
-              <tr key={JSON.stringify(row)}>
-                {Object.keys(row).map(column => {
-                  return (
-                    <Cell
-                      index={index}
-                      row={row}
-                      column={column}
-                      key={column}
-                    />
-                  );
-                })}
-              </tr>
-            );
+            return <Row key={JSON.stringify(row)} row={row} index={index} />;
           })}
         </tbody>
       </table>

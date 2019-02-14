@@ -8,6 +8,8 @@ import ConfirmBar from "./components/ConfirmBar";
 import config from "./config";
 import styled from "styled-components";
 
+const color = "rgba(200, 200, 200, 0.98)";
+
 const App = props => {
   useEffect(() => {
     if ((window as any).massive) {
@@ -19,15 +21,17 @@ const App = props => {
 
   return (
     <BrowserRouter>
-      <Window>
-        <NavPanel>
-          <Route path="/" component={Nav} />
-        </NavPanel>
-        <MainPanel>
-          <Route path="/tables/:table" component={Table} />
-          <Route path="/tables/:table" component={ConfirmBar} />
-        </MainPanel>
-      </Window>
+      <>
+        <Window>
+          <NavPanel>
+            <Route path="/" component={Nav} />
+          </NavPanel>
+          <MainPanel>
+            <Route path="/tables/:table" component={Table} />
+            <Route path="/tables/:table" component={ConfirmBar} />
+          </MainPanel>
+        </Window>
+      </>
     </BrowserRouter>
   );
 };
@@ -36,6 +40,12 @@ export default connect(
   state => ({}),
   { connectMassive }
 )(App);
+
+const TitleBar = styled.header`
+  background: rgba(200, 200, 200, 0.98);
+  width: 100%;
+  height: 20px;
+`;
 
 const MainPanel = styled.section`
   overflow: auto;
@@ -48,7 +58,7 @@ const NavPanel = styled.nav`
   width: 20vw;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid gray;
+  border-right: 1px solid rgb(219, 219, 219);
   overflow: auto;
   flex-shrink: 0;
 `;
