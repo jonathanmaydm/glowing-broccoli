@@ -3,7 +3,7 @@ import { compose } from "redux";
 import { connect } from "react-redux";
 
 import { Prompt, withRouter } from "react-router-dom";
-import { discardChanges, toggleEdit } from "../redux/reducers";
+import { discardChanges } from "../redux/reducers";
 
 //needs refactoring
 
@@ -28,7 +28,6 @@ const ConfirmBar = props => {
           <button
             onClick={() => {
               props.discardChanges();
-              props.toggleEdit("");
             }}
           >
             Discard
@@ -59,5 +58,5 @@ const ConfirmBar = props => {
 
 export default connect(
   state => state,
-  { discardChanges, toggleEdit }
+  { discardChanges }
 )(ConfirmBar);
