@@ -1,26 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Prompt } from "react-router-dom";
-import { discardChanges, toggleEdit } from "../redux/reducers";
+import { discardChanges, fetchData } from "../redux/reducers";
 
 import Cell from "./Cell";
 import { Row } from "./Row";
 
-const Table = (props: any) => {
-  const [data, updateData] = useState([]);
+const Table = ({ data, ...props }: any) => {
   const fetchData = () => {
-    if (props.massive && props.match.params.table) {
-      props.massive[props.match.params.table].find().then((res: any) => {
-        updateData(res);
-      });
-    }
+    props.fetchData(props.match.params.table);
   };
   useEffect(fetchData, [props.match.params.table, props.massive]);
 
   useEffect(
     () => {
       props.discardChanges();
-      props.toggleEdit("");
     },
     [props.match.params.table]
   );
@@ -60,5 +54,5 @@ const Table = (props: any) => {
 
 export default connect(
   state => state,
-  { discardChanges, toggleEdit }
+  { discardChanges, fetchData }
 )(Table);

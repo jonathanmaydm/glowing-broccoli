@@ -1,15 +1,16 @@
 import { db } from "../db";
-import { CONNECT_MASSIVE_SUCCEEDED } from "./sagas";
+import { CONNECT_MASSIVE_SUCCEEDED, FETCH_DATA_SUCCEEDED } from "./sagas";
 
 const initialState = {
   massive: null,
   db,
   editing: "",
-  updates: []
+  updates: [],
+  data: []
 };
 
 export const CONNECT_MASSIVE = "CONNECT_MASSIVE";
-export const TOGGLE_EDIT = "TOGGLE_EDIT";
+export const FETCH_DATA = "FETCH_DATA";
 export const QUEUE_UPDATE = "QUEUE_UPDATE";
 export const DISCARD_CHANGES = "DISCARD_CHANGES";
 
@@ -19,10 +20,10 @@ export const connectMassive = () => {
   };
 };
 
-export const toggleEdit = cell => {
+export const fetchData = table => {
   return {
-    type: TOGGLE_EDIT,
-    payload: cell
+    type: FETCH_DATA,
+    payload: table
   };
 };
 
@@ -43,6 +44,8 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case CONNECT_MASSIVE_SUCCEEDED:
       return { ...state, massive: action.payload };
+    case FETCH_DATA_SUCCEEDED:
+      return { ...state, data: action.payload };
     case QUEUE_UPDATE:
       return { ...state, updates: [...state.updates, action.payload] };
     case DISCARD_CHANGES:
