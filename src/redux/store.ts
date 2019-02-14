@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, compose } from "redux";
 import createSagaMiddleware from "redux-saga";
 
 import reducer from "./reducers";
-import mySaga from "./sagas";
+import massiveSaga from "./sagas";
 
 const composeEnhancers =
   (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -11,11 +11,11 @@ const composeEnhancers =
 const sagaMiddleware = createSagaMiddleware();
 // mount it on the Store
 export const store = createStore(
-  reducer
-  // composeEnhancers(applyMiddleware(sagaMiddleware))
+  reducer,
+  composeEnhancers(applyMiddleware(sagaMiddleware))
 );
 
 // then run the saga
-// sagaMiddleware.run(mySaga);
+sagaMiddleware.run(massiveSaga);
 
 // render the application

@@ -12,11 +12,7 @@ const color = "rgba(200, 200, 200, 0.98)";
 
 const App = props => {
   useEffect(() => {
-    if ((window as any).massive) {
-      (window as any)
-        .massive(config.CONNECTION_STRING)
-        .then(props.connectMassive);
-    }
+    props.connectMassive();
   }, []);
 
   return (
