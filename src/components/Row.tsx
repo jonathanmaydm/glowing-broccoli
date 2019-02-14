@@ -1,11 +1,14 @@
 import React, { useState, useRef } from "react";
+import styled from "styled-components";
 import Cell from "./Cell";
+import { connect } from "react-redux";
+import { queueUpdate } from "../redux/reducers";
 
-export const Row = props => {
+const RowWithoutData = props => {
   const [focused, toggleFocus] = useState(false);
   const tr = useRef({} as any);
   return (
-    <tr
+    <Tr
       tabIndex={0}
       ref={tr}
       onFocus={() => {
@@ -14,16 +17,36 @@ export const Row = props => {
       onBlur={() => {
         toggleFocus(false);
       }}
-      style={{ background: focused ? "rgba(20, 20, 230, 0.8)" : "" }}
+      focused={focused}
     >
       {Object.keys(props.row).map(column => (
         <Cell
-          index={props.index}
-          row={props.row}
-          column={column}
+          addUpdate={content => {
+            props.queueUpdate({
+              original: { ...props.row },
+              updated: {
+                ...props.row,
+                [column]: content
+              }
+            });
+          }}
+          content={props.row[column]}
           key={column}
         />
       ))}
-    </tr>
+    </Tr>
   );
 };
+
+export const Row = connect(
+  state => state,
+  { queueUpdate }
+)(RowWithoutData);
+
+const Tr = styled.tr`
+  :focus {
+    outline: none;
+  }
+  ${props => (props.focused ? "background: rgb(35, 99, 217)" : null)};
+  ${props => (props.focused ? "color: white" : null)};
+`;
