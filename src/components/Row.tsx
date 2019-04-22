@@ -2,15 +2,18 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import Cell from "./Cell";
 import { connect } from "react-redux";
-import { queueUpdate } from "../redux/reducers";
+import { queueUpdate, updateColumn } from "../redux/reducers";
 
-const RowWithoutData = props => {
+const RowWithoutData = (props: any) => {
   const [focused, toggleFocus] = useState(false);
   const tr = useRef({} as any);
+
+  const original = props.data[props.row].original;
+  const updates = props.data[props.row].updates;
   return (
     <Tr
       tabIndex={0}
-      ref={tr}
+      // ref={tr}
       onFocus={() => {
         toggleFocus(true);
       }}
@@ -19,28 +22,36 @@ const RowWithoutData = props => {
       }}
       focused={focused}
     >
-      {Object.keys(props.row).map(column => (
-        <Cell
-          addUpdate={content => {
-            props.queueUpdate({
-              original: { ...props.row },
-              updated: {
-                ...props.row,
-                [column]: content
+      {Object.keys(original || {}).map(column => {
+        return (
+          <Cell
+            edit={update => {
+              if (original[column] === update) {
+                props.updateColumn(column, props.row, undefined);
+              } else {
+                props.updateColumn(column, props.row, update);
               }
-            });
-          }}
-          content={props.row[column]}
-          key={column}
-        />
-      ))}
+            }}
+            content={
+              updates[column] === ""
+                ? ""
+                : updates[column] === null
+                  ? null
+                  : updates[column] || original[column]
+            }
+            edited={updates[column] === "" || updates[column]}
+            key={column}
+            focused={focused}
+          />
+        );
+      })}
     </Tr>
   );
 };
 
 export const Row = connect(
-  state => state,
-  { queueUpdate }
+  (state: any) => ({ data: state.data }),
+  { queueUpdate, updateColumn }
 )(RowWithoutData);
 
 const Tr = styled.tr`

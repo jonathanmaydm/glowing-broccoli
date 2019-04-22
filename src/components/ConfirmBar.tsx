@@ -1,27 +1,30 @@
 import React from "react";
-import { compose } from "redux";
 import { connect } from "react-redux";
 
-import { Prompt, withRouter } from "react-router-dom";
-import { discardChanges } from "../redux/reducers";
+import { Prompt } from "react-router-dom";
+import { discardChanges, saveChanges } from "../redux/reducers";
+import styled from "styled-components";
 
 //needs refactoring
 
 const ConfirmBar = props => {
+  const updates = props.data.filter(row => Object.keys(row.updates).length > 0)
+    .length;
+
   return (
     <>
-      {!!props.updates.length && (
-        <div
+      {updates > 0 && (
+        <Footer
           style={{
-            background: "yellow",
+            background: "rgb(250, 250, 200)",
             zIndex: 1,
             position: "absolute",
             bottom: 0,
-            width: "100%"
+            width: "80vw"
           }}
         >
           <Prompt
-            when={!!props.updates.length}
+            when={!!updates}
             message="Are you sure you want to this page? Unsaved data will be lost"
           />
           You have unsaved changes
@@ -32,31 +35,22 @@ const ConfirmBar = props => {
           >
             Discard
           </button>
-          <button
-            onClick={() => {
-              const promises = props.updates.map(update => {
-                return props.massive[props.match.params.table]
-                  .update(update.original, update.updated)
-                  .catch(console.log);
-              });
-              Promise.all(promises)
-                .then(result => {
-                  // fetchData();
-                  props.discardChanges();
-                  props.toggleEdit("");
-                })
-                .catch(console.log);
-            }}
-          >
+          <button onClick={() => props.saveChanges(props.match.params.table)}>
             Save
           </button>
-        </div>
+        </Footer>
       )}
     </>
   );
 };
 
+const Footer = styled.footer`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
 export default connect(
   state => state,
-  { discardChanges }
+  { discardChanges, saveChanges }
 )(ConfirmBar);

@@ -6,8 +6,9 @@ import {
   takeEvery,
   takeLatest
 } from "redux-saga/effects";
-import { CONNECT_MASSIVE, FETCH_DATA } from "./reducers";
+import { CONNECT_MASSIVE, FETCH_DATA, SAVE_CHANGES } from "./reducers";
 import config from "../config";
+import { Database, Writable } from "massive";
 const massive = (window as any).massive;
 
 export const CONNECT_MASSIVE_SUCCEEDED = "CONNECT_MASSIVE_SUCCEEDED";
@@ -20,7 +21,7 @@ function* watchMassive() {
 
 function* massiveSaga(action) {
   try {
-    const massive = yield call(
+    const massive: Database = yield call(
       (window as any).massive,
       config.CONNECTION_STRING
     );
@@ -38,10 +39,32 @@ function* dataSaga(action) {
   const massive = yield select(state => state.massive);
   if (massive) {
     const data = yield massive[action.payload].find();
-    yield put({ type: FETCH_DATA_SUCCEEDED, payload: data });
+    let payload = data.map(row => ({ original: { ...row }, updates: {} }));
+    yield put({ type: FETCH_DATA_SUCCEEDED, payload });
+  }
+}
+
+function* watchUpdates() {
+  yield takeEvery(SAVE_CHANGES, updateSaga);
+}
+
+function* updateSaga(action) {
+  const massive = yield select(state => state.massive);
+  if (massive) {
+    const updates = yield select(state =>
+      state.data
+        .filter(row => Object.keys(row.updates).length > 0)
+        .map(row => ({ ...row.original, ...row.updates }))
+    );
+    console.log(updates);
+    const promises = updates.map(update =>
+      (massive[action.payload] as Writable).save(update, { build: false })
+    );
+    const results = yield Promise.all(promises);
+    yield put({ type: FETCH_DATA, payload: action.payload });
   }
 }
 
 export default function* rootSaga() {
-  yield all([watchData(), watchMassive()]);
+  yield all([watchData(), watchMassive(), watchUpdates()]);
 }
